@@ -1,0 +1,32 @@
+{
+  "name": "grunt-bbb-styles",
+  "description": "Compile BBB Project Styles.",
+  "version": "0.1.0-alpha",
+  "homepage": "https://github.com/backbone-boilerplate/grunt-bbb-styles",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/backbone-boilerplate/grunt-bbb-styles.git"
+  },
+  "bugs": {
+    "url": "https://github.com/backbone-boilerplate/grunt-bbb-styles/issues"
+  },
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "cssom": "0.2.5"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "0.1.1rc6",
+    "grunt-contrib-nodeunit": "0.1.2rc6",
+    "grunt-contrib-internal": "*",
+    "grunt": "0.4.0rc7"
+  },
+  "keywords": [
+    "gruntplugin"
+  ]
+}

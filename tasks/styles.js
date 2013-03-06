@@ -38,9 +38,8 @@ module.exports = function(grunt) {
       options.paths = [];
     }
 
-    // Backwards compatibility, this path used to be hardcoded.
     if (!options.prefix) {
-      options.prefix = "assets/css/";
+      options.prefix = "./app/styles/";
     }
 
     options.paths.push(require("nib").path);
@@ -62,13 +61,8 @@ module.exports = function(grunt) {
 
       // Parse Stylus files.
       if (path.extname(filepath).slice(1) === "styl") {
-        var contentType = "text/css";
-        var opts = {
-          paths: ["." + req.url.split("/").slice(0, -1).join("/") + "/"]
-        };
-
         // Compile the source.
-        stylus.compile(String(contents), options, function(css) {
+        return stylus.compile(String(contents), options, function(css) {
           output += css;
         });
 

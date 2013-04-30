@@ -28,6 +28,8 @@ module.exports = function(grunt) {
     var stylesheet = cssom.parse(contents);
     // Include the Stylus library.
     var stylus = require("grunt-lib-stylus").init(grunt);
+    // Ensure that any template's used in the file name are accounted for.
+    var processedTarget = grunt.config.process(this.target);
 
     // If no CSS rules are defined, why are we even here?
     if (!Array.isArray(stylesheet.cssRules)) {
@@ -78,9 +80,9 @@ module.exports = function(grunt) {
     });
 
     // Write out the debug file.
-    file.write(this.target, output);
+    file.write(processedTarget, output);
     
     // Success message.
-    log.writeln("File " + this.target + " created.");
+    log.writeln("File " + processedTarget + " created.");
   });
 };

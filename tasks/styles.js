@@ -28,6 +28,7 @@ module.exports = function(grunt) {
     var stylesheet = cssom.parse(contents);
     // Include the Stylus library.
     var stylus = require("grunt-lib-stylus").init(grunt);
+    var less = require("grunt-lib-less").init(grunt);
     // Ensure that any template's used in the file name are accounted for.
     var processedTarget = grunt.config.process(this.target);
 
@@ -70,7 +71,7 @@ module.exports = function(grunt) {
 
       // Parse LESS files.
       } else if (path.extname(filepath).slice(1) === "less") {
-        return grunt.helper("less", contents, options, function(css) {
+        return less.compile(String(contents), options, function(css) {
           output += css;
         });
       }

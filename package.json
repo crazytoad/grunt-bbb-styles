@@ -1,7 +1,7 @@
 {
   "name": "grunt-bbb-styles",
   "description": "Compile BBB Project Styles.",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "homepage": "https://github.com/backbone-boilerplate/grunt-bbb-styles",
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   "dependencies": {
     "cssom": "0.2.5",
     "grunt-lib-stylus": "~0.1.0",
+    "grunt-lib-less": "~0.1.0",
     "stylus": "~0.32.1",
     "nib": "~0.9.1"
   },

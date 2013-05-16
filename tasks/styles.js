@@ -18,6 +18,7 @@ module.exports = function(grunt) {
   var file = grunt.file;
 
   grunt.registerMultiTask("styles", "Compile project styles.", function() {
+    var done = this.async();
     // Output file.
     var output = "";
     // Options.
@@ -45,12 +46,9 @@ module.exports = function(grunt) {
       options.prefix = "./app/styles/";
     }
 
-    options.paths.push(require("nib").path);
-
     // Iterate over the CSS rules, reducing to only @imports, then apply the
-    // correct prefixed path to each file.  Finally, process each file and
-    // concat into the output file.
-    stylesheet.cssRules.reduce(function(paths, rule) {
+    // correct prefixed path to each file.
+    var paths = stylesheet.cssRules.reduce(function(paths, rule) {
       // If it has a path it's relevant, so add to the paths array.
       if (rule.href) {
         paths.push(rule.href);
@@ -59,31 +57,60 @@ module.exports = function(grunt) {
       return paths;
     }, []).map(function(path) {
       return options.prefix + path;
-    }).concat(options.additional || []).forEach(function(filepath) {
+    }).concat(options.additional || []);
+
+    function process(paths, cb) {
+      if (!paths.length) { return cb(); }
+
+      var opts = {
+        paths: [].concat(options.paths)
+      };
+
+      // Get the first path off the array.
+      var filepath = paths.shift();
+      // Find the contents.
       var contents = file.read(filepath);
+
+      // Add the current dirname to the paths.
+      opts.paths.push(path.dirname(filepath));
 
       // Parse Stylus files.
       if (path.extname(filepath).slice(1) === "styl") {
         // Compile the source.
-        return stylus.compile(String(contents), options, function(css) {
+        return stylus.compile(String(contents), opts, function(css) {
           output += css;
+
+          // Continue processing.
+          process(paths, cb);
         });
 
       // Parse LESS files.
       } else if (path.extname(filepath).slice(1) === "less") {
-        return less.compile(String(contents), options, function(css) {
+        // Compile the source.
+        return less.compile(String(contents), opts, function(css) {
           output += css;
+
+          // Continue processing.
+          process(paths, cb);
         });
       }
 
       // Add vanilla CSS files.
       output += contents;
-    });
 
-    // Write out the debug file.
-    file.write(processedTarget, output);
-    
-    // Success message.
-    log.writeln("File " + processedTarget + " created.");
+      // Continue processing.
+      return process(paths, cb);
+    }
+
+    // Once finished processing...
+    process(paths, function() {
+      // Write out the debug file.
+      file.write(processedTarget, output);
+      
+      // Success message.
+      log.writeln("File " + processedTarget + " created.");
+
+      done();
+    });
   });
 };

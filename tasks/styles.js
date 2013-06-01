@@ -59,6 +59,35 @@ module.exports = function(grunt) {
       return options.prefix + path;
     }).concat(options.additional || []);
 
+    function additionalProcessing(css, filepath) {
+      var stylesheet = cssom.parse(css);
+      var url = /url\("(.*)"\)/;
+      var dir = path.dirname(filepath);
+      var rel = options.forceRelative;
+
+      // Augment paths if a forceRelative path is specificed.
+      if (options.hasOwnProperty("forceRelative")) {
+        stylesheet.cssRules.forEach(function(rule) {
+          // Iterate over all styles and find all `url` values.
+          [].slice.apply(rule.style || []).forEach(function(key) {
+            var value = rule.style[key];
+            var match;
+
+            // Replace the image paths.
+            if (match = value.match(url)) {
+              value = value.replace(match[1], rel + path.join(dir, match[1]));
+              rule.style[key] = value;
+            }
+          });
+        });
+
+        // Return the normalized data.
+        return stylesheet.toString();
+      }
+
+      return css;
+    }
+
     function process(paths, cb) {
       if (!paths.length) { return cb(); }
 
@@ -78,7 +107,7 @@ module.exports = function(grunt) {
       if (path.extname(filepath).slice(1) === "styl") {
         // Compile the source.
         return stylus.compile(String(contents), opts, function(css) {
-          output += css;
+          output += additionalProcessing(css, filepath);
 
           // Continue processing.
           process(paths, cb);
@@ -88,7 +117,7 @@ module.exports = function(grunt) {
       } else if (path.extname(filepath).slice(1) === "less") {
         // Compile the source.
         return less.compile(String(contents), opts, function(css) {
-          output += css;
+          output += additionalProcessing(css, filepath);
 
           // Continue processing.
           process(paths, cb);
@@ -96,7 +125,7 @@ module.exports = function(grunt) {
       }
 
       // Add vanilla CSS files.
-      output += contents;
+      output += additionalProcessing(contents, filepath);
 
       // Continue processing.
       return process(paths, cb);

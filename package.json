@@ -18,7 +18,7 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "cssom": "git://github.com/crazytoad/CSSOM#gh-pages",
+    "cssom": "git://github.com/crazytoad/CSSOM#merge_multiple_props",
     "grunt-lib-stylus": "~0.1.0",
     "grunt-lib-less": "~0.1.0",
     "stylus": "~0.32.1",
